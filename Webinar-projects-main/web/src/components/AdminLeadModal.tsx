@@ -65,7 +65,7 @@ export function AdminLeadModal({ open, onClose, id, onUpdated }: { open: boolean
                 <div><Label>Webinar Date</Label><div className="font-semibold">{lead.webinar_date}</div></div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
                 <div>
                   <Label>Lead Status</Label>
                   <select className="w-full mt-1 p-2 border rounded" value={lead.lead_status} onChange={(e)=> setLead({...lead, lead_status: e.target.value})}>
@@ -96,10 +96,20 @@ export function AdminLeadModal({ open, onClose, id, onUpdated }: { open: boolean
                     <option>Completed</option>
                   </select>
                 </div>
+
+                <div>
+                  <Label>Contact Status</Label>
+                  <select className="w-full mt-1 p-2 border rounded" value={lead.contact_status || 'Not Contacted'} onChange={(e)=> setLead({...lead, contact_status: e.target.value})}>
+                    <option>Not Contacted</option>
+                    <option>Contacted</option>
+                    <option>Follow Up</option>
+                    <option>Converted</option>
+                  </select>
+                </div>
               </div>
 
               <div className="flex items-center gap-3 mt-4">
-                <Button disabled={saving} onClick={()=> update({ lead_status: lead.lead_status, attendance_status: lead.attendance_status, counselling_status: lead.counselling_status })}>Save</Button>
+                <Button disabled={saving} onClick={()=> update({ lead_status: lead.lead_status, attendance_status: lead.attendance_status, counselling_status: lead.counselling_status, contact_status: lead.contact_status || 'Not Contacted' })}>Save</Button>
                 <Button variant="secondary" onClick={onClose}>Close</Button>
               </div>
             </div>

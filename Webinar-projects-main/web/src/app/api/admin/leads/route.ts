@@ -1,25 +1,20 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 import { verifyAdminToken } from '@/lib/admin-auth';
-
-const DATA_FILE = path.join(process.cwd(), 'data', 'leads.json');
-
-async function readLeads() {
-  try {
-    const raw = await fs.promises.readFile(DATA_FILE, 'utf-8');
-    return JSON.parse(raw || '[]');
-  } catch (e) {
-    return [];
-  }
-}
+import { getSupabaseAdminClient } from '@/lib/supabase';
 
 export async function GET(req: Request) {
   try {
     const cookie = req.headers.get('cookie') || '';
-    const token = cookie.split(';').map((s) => s.trim()).find((c) => c.startsWith('admin_token='))?.split('=')[1];
+    const token = cookie
+      .split(';')
+      .map((s) => s.trim())
+      .find((c) => c.startsWith('admin_token='))
+      ?.split('=')[1];
     const admin = verifyAdminToken(token);
-    if (!admin) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+    if (!admin) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
 
     const url = new URL(req.url);
     const search = url.searchParams.get('search') || '';
@@ -30,29 +25,27 @@ export async function GET(req: Request) {
     const start = url.searchParams.get('start') || '';
     const end = url.searchParams.get('end') || '';
 
-    let leads = await readLeads();
+    const supabase = getSupabaseAdminClient();
+    let query = supabase.from('leads').select('*');
 
-    // filtering
     if (search) {
-      const q = search.toLowerCase();
-      leads = leads.filter((l: any) => (l.full_name || '').toLowerCase().includes(q) || (l.email || '').toLowerCase().includes(q) || (l.whatsapp_number || '').toLowerCase().includes(q));
+      const q = search.trim();
+      query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,whatsapp_number.ilike.%${q}%`);
     }
-    if (status) leads = leads.filter((l: any) => (l.lead_status || '') === status);
-    if (attendance) leads = leads.filter((l: any) => (l.attendance_status || '') === attendance);
-    if (course) leads = leads.filter((l: any) => (l.course_interest || '') === course);
-    if (source) leads = leads.filter((l: any) => (l.source || '') === source);
-    if (start) {
-      const s = new Date(start).getTime();
-      leads = leads.filter((l: any) => new Date(l.registration_date).getTime() >= s);
-    }
-    if (end) {
-      const e = new Date(end).getTime();
-      leads = leads.filter((l: any) => new Date(l.registration_date).getTime() <= e);
-    }
+    if (status) query = query.eq('lead_status', status);
+    if (attendance) query = query.eq('attendance_status', attendance);
+    if (course) query = query.eq('course_interest', course);
+    if (source) query = query.eq('source', source);
+    if (start) query = query.gte('registration_date', new Date(`${start}T00:00:00Z`).toISOString());
+    if (end) query = query.lte('registration_date', new Date(`${end}T23:59:59.999Z`).toISOString());
 
-    return NextResponse.json({ leads }, { status: 200 });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ message: 'Server error' }, { status: 500 });
+    const { data, error } = await query.order('registration_date', { ascending: false });
+
+    if (error) throw error;
+
+    return NextResponse.json({ leads: data || [] }, { status: 200 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Server error';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

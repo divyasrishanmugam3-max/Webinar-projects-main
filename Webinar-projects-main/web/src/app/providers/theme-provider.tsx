@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 
 type ThemeProviderProps = {
   children: ReactNode;
-  attribute?: string;
+  attribute?: "class" | "data-theme" | Array<"class" | "data-theme">;
   defaultTheme?: string;
   enableSystem?: boolean;
   disableTransitionOnChange?: boolean;
