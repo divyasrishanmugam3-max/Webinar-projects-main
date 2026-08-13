@@ -1,0 +1,36 @@
+[
+  {
+    "id": "2cd87e0e-972f-4158-9551-92f69c224334",
+    "full_name": "Divyasri S",
+    "whatsapp_number": "9940672210",
+    "email": "divyasrishanmugam3@gmail.com",
+    "city": "",
+    "qualification": "",
+    "current_status": "College Student",
+    "course_interest": "Full Stack Development + AI",
+    "main_goal": "Get a Job",
+    "source": "Direct",
+    "registration_date": "2026-08-13T08:05:13.196Z",
+    "webinar_date": "Saturday, August 16, 2026 • 7:00 PM IST",
+    "lead_status": "Registered",
+    "attendance_status": "Not Attended",
+    "counselling_status": "Not Booked"
+  },
+  {
+    "id": "87fb3e63-ab9f-4c18-adc3-d1acb588a731",
+    "full_name": "Jasmine",
+    "whatsapp_number": "9940672211",
+    "email": "jasmine2@gmail.com",
+    "city": "",
+    "qualification": "",
+    "current_status": "College Student",
+    "course_interest": "Full Stack Development + AI",
+    "main_goal": "Get a Job",
+    "source": "Direct",
+    "registration_date": "2026-08-13T08:27:36.755Z",
+    "webinar_date": "Saturday, August 16, 2026 • 7:00 PM IST",
+    "lead_status": "Registered",
+    "attendance_status": "Not Attended",
+    "counselling_status": "Not Booked"
+  }
+]
