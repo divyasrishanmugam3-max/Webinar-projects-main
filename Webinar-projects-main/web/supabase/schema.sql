@@ -15,9 +15,24 @@ CREATE TABLE IF NOT EXISTS public.leads (
   attendance_status TEXT DEFAULT 'Not Attended',
   counselling_status TEXT DEFAULT 'Not Booked',
   contact_status TEXT DEFAULT 'Not Contacted',
+  last_contacted_at TIMESTAMPTZ,
+  follow_up_date TIMESTAMPTZ,
+  follow_up_notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE public.leads
+  ADD COLUMN IF NOT EXISTS contact_status TEXT DEFAULT 'Not Contacted';
+
+ALTER TABLE public.leads
+  ADD COLUMN IF NOT EXISTS last_contacted_at TIMESTAMPTZ;
+
+ALTER TABLE public.leads
+  ADD COLUMN IF NOT EXISTS follow_up_date TIMESTAMPTZ;
+
+ALTER TABLE public.leads
+  ADD COLUMN IF NOT EXISTS follow_up_notes TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_leads_email ON public.leads (email);
 CREATE INDEX IF NOT EXISTS idx_leads_whatsapp_number ON public.leads (whatsapp_number);

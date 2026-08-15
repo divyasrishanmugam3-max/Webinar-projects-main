@@ -9,16 +9,16 @@ const COOKIE_NAME = 'admin_token';
 
 export function getAdminEnvironmentStatus() {
   return {
-    ADMIN_EMAIL_configured: Boolean(process.env.ADMIN_EMAIL?.trim()),
-    ADMIN_PASSWORD_configured: Boolean(process.env.ADMIN_PASSWORD?.trim()),
-    SUPABASE_URL_configured: Boolean(process.env.SUPABASE_URL?.trim()),
-    SUPABASE_SERVICE_ROLE_KEY_configured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()),
+    ADMIN_EMAIL_configured: Boolean(process.env.NEXT_PUBLIC_ADMIN_EMAIL?.trim()),
+    ADMIN_PASSWORD_configured: Boolean(process.env.NEXT_PUBLIC_ADMIN_PASSWORD?.trim()),
+    SUPABASE_URL_configured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()),
+    SUPABASE_SERVICE_ROLE_KEY_configured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()),
   };
 }
 
 export function getAdminCredentials() {
-  const adminEmail = process.env.ADMIN_EMAIL?.trim() || '';
-  const adminPassword = process.env.ADMIN_PASSWORD?.trim() || '';
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.trim() || '';
+  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD?.trim() || '';
   return { adminEmail, adminPassword };
 }
 

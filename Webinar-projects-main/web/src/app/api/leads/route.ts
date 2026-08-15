@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getSupabaseAdminClient } from '@/lib/supabase';
 import { WEBINAR_DETAILS } from '@/types/webinar';
 
 export async function POST(req: Request) {
@@ -24,50 +23,87 @@ export async function POST(req: Request) {
 
     const normalizedEmail = String(email).trim();
     const normalizedPhone = String(whatsapp_number).trim();
-    const supabase = getSupabaseAdminClient();
+    const apiBase = process.env.NEXT_PUBLIC_SUPABASE_API_URL?.replace(/\/$/, '');
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-    const { data: existing, error: duplicateError } = await supabase
-      .from('leads')
-      .select('id')
-      .or(`email.eq.${normalizedEmail},whatsapp_number.eq.${normalizedPhone}`);
-
-    if (duplicateError) {
-      throw duplicateError;
+    if (!apiBase || !anonKey) {
+      console.error('[leads] Missing Supabase REST configuration');
+      return NextResponse.json({ message: 'Supabase is not configured.' }, { status: 500 });
     }
 
-    if (existing && existing.length > 0) {
+    const duplicateUrl = new URL(`${apiBase}/leads`);
+    duplicateUrl.searchParams.set('select', 'id');
+    duplicateUrl.searchParams.set('or', `email.eq.${normalizedEmail},whatsapp_number.eq.${normalizedPhone}`);
+
+    const duplicateResponse = await fetch(duplicateUrl.toString(), {
+      method: 'GET',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    if (!duplicateResponse.ok) {
+      console.error('[leads] Duplicate check error:', {
+        status: duplicateResponse.status,
+        statusText: duplicateResponse.statusText,
+      });
+      return NextResponse.json({ message: 'Unable to validate leads' }, { status: 502 });
+    }
+
+    const existing = await duplicateResponse.json();
+    if (Array.isArray(existing) && existing.length > 0) {
       return NextResponse.json({ message: 'Lead already exists' }, { status: 409 });
     }
 
-    const { data, error } = await supabase
-      .from('leads')
-      .insert([
-        {
-          full_name: String(full_name).trim(),
-          whatsapp_number: normalizedPhone,
-          email: normalizedEmail,
-          city: city || '',
-          qualification: qualification || '',
-          current_status: current_status || '',
-          course_interest: course_interest || '',
-          main_goal: main_goal || '',
-          source: source || 'Direct',
-          registration_date: new Date().toISOString(),
-          webinar_date: webinar_date || WEBINAR_DETAILS.dateTimeStr,
-          lead_status: 'Registered',
-          attendance_status: 'Not Attended',
-          counselling_status: 'Not Booked',
-          contact_status: 'Not Contacted',
-        },
-      ])
-      .select('id')
-      .single();
+    const insertPayload = [
+      {
+        full_name: String(full_name).trim(),
+        whatsapp_number: normalizedPhone,
+        email: normalizedEmail,
+        city: city || '',
+        qualification: qualification || '',
+        current_status: current_status || '',
+        course_interest: course_interest || '',
+        main_goal: main_goal || '',
+        source: source || 'Direct',
+        registration_date: new Date().toISOString(),
+        webinar_date: webinar_date || WEBINAR_DETAILS.dateTimeStr,
+        lead_status: 'Registered',
+        attendance_status: 'Not Attended',
+        counselling_status: 'Not Booked',
+        contact_status: 'Not Contacted',
+      },
+    ];
 
-    if (error) {
-      throw error;
+    const insertResponse = await fetch(`${apiBase}/leads`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify(insertPayload),
+    });
+
+    if (!insertResponse.ok) {
+      console.error('[leads] Insert error:', {
+        status: insertResponse.status,
+        statusText: insertResponse.statusText,
+      });
+      return NextResponse.json(
+        { message: 'Unable to create lead' },
+        { status: insertResponse.status >= 500 ? 502 : 500 }
+      );
     }
 
-    return NextResponse.json({ id: data.id }, { status: 201 });
+    const inserted = await insertResponse.json();
+    const created = Array.isArray(inserted) ? inserted[0] : inserted;
+
+    return NextResponse.json({ id: created?.id ?? null }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Server error';
     return NextResponse.json({ message }, { status: 500 });
