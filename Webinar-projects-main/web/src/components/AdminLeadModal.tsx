@@ -114,121 +114,126 @@ const update = async (patch: any) => {
 
   return (
     <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
-      <DialogContent className="max-w-4xl overflow-hidden rounded-2xl border-border bg-card p-0">
-        <div className="max-h-[90vh] overflow-y-auto p-6">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">Lead Details</DialogTitle>
-            <DialogDescription>View, update, and follow up on the lead.</DialogDescription>
+      <DialogContent className="max-w-4xl overflow-hidden rounded-xl border-gray-200 bg-white p-0 shadow-lg">
+        <div className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="border-b border-gray-200 bg-emerald-50 px-6 py-6">
+            <DialogTitle className="text-2xl font-bold text-gray-900">Lead Details</DialogTitle>
+            <DialogDescription className="text-gray-600">View, update, and follow up on the lead.</DialogDescription>
           </DialogHeader>
 
-          {!lead ? (
-            <div className="mt-6 text-sm text-muted-foreground">Loading lead details...</div>
-          ) : (
-            <div className="mt-6 space-y-6">
-              <div className="flex flex-wrap gap-3">
-                <Button type="button" variant="secondary" asChild>
-                  <a href={whatsappLink} target="_blank" rel="noreferrer">WhatsApp</a>
-                </Button>
-                <Button type="button" variant="secondary" asChild>
-                  <a href={emailLink}>Email</a>
-                </Button>
-                <Button type="button" variant="outline" onClick={() => update({
-                  lead_status: lead.lead_status,
-                  attendance_status: lead.attendance_status,
-                  counselling_status: lead.counselling_status,
-                  contact_status: lead.contact_status || 'Not Contacted',
-                  follow_up_date: lead.follow_up_date,
-                  follow_up_notes: lead.follow_up_notes,
-                })} disabled={saving}>Save Changes</Button>
-                <Button type="button" variant="outline" onClick={() => update({ counselling_status: 'Booked', lead_status: 'Interested' })} disabled={saving}>Book Counselling</Button>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-border bg-background/60 p-4">
-                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Personal Information</h3>
-                  <div className="space-y-3 text-sm">
-                    <div><Label>Full Name</Label><div className="mt-1 font-medium text-foreground">{lead.full_name || '—'}</div></div>
-                    <div><Label>WhatsApp</Label><div className="mt-1 font-medium text-foreground">{lead.whatsapp_number || '—'}</div></div>
-                    <div><Label>Email</Label><div className="mt-1 font-medium text-foreground">{lead.email || '—'}</div></div>
-                    <div><Label>City</Label><div className="mt-1 font-medium text-foreground">{lead.city || '—'}</div></div>
-                    <div><Label>Qualification</Label><div className="mt-1 font-medium text-foreground">{lead.qualification || '—'}</div></div>
-                    <div><Label>Current Status</Label><div className="mt-1 font-medium text-foreground">{lead.current_status || '—'}</div></div>
-                  </div>
+          <div className="p-6">
+            {!lead ? (
+              <div className="mt-6 text-sm text-gray-500">Loading lead details...</div>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex flex-wrap gap-3">
+                  <Button type="button" className="bg-emerald-700 text-white hover:bg-emerald-800" asChild>
+                    <a href={whatsappLink} target="_blank" rel="noreferrer">Open WhatsApp</a>
+                  </Button>
+                  <Button type="button" className="bg-emerald-600 text-white hover:bg-emerald-700" asChild>
+                    <a href={emailLink}>Send Email</a>
+                  </Button>
+                  <Button type="button" variant="outline" className="border-gray-300" onClick={() => update({
+                    lead_status: lead.lead_status,
+                    attendance_status: lead.attendance_status,
+                    counselling_status: lead.counselling_status,
+                    contact_status: lead.contact_status || 'Not Contacted',
+                    follow_up_date: lead.follow_up_date,
+                    follow_up_notes: lead.follow_up_notes,
+                  })} disabled={saving}>Save Changes</Button>
+                  <Button type="button" className="bg-amber-600 text-white hover:bg-amber-700" onClick={() => update({ counselling_status: 'Booked', lead_status: 'Interested' })} disabled={saving}>Book Counselling</Button>
                 </div>
 
-                <div className="rounded-xl border border-border bg-background/60 p-4">
-                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Course Information</h3>
-                  <div className="space-y-3 text-sm">
-                    <div><Label>Course Interest</Label><div className="mt-1 font-medium text-foreground">{lead.course_interest || '—'}</div></div>
-                    <div><Label>Main Goal</Label><div className="mt-1 font-medium text-foreground">{lead.main_goal || '—'}</div></div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div>
-                  <Label>Lead Status</Label>
-                  <select className="mt-1 w-full rounded-md border border-input bg-background p-2 text-foreground" value={lead.lead_status || 'Registered'} onChange={(e) => setLead({ ...lead, lead_status: e.target.value })}>
-                    {LEAD_STATUS_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <Label>Attendance Status</Label>
-                  <select className="mt-1 w-full rounded-md border border-input bg-background p-2 text-foreground" value={lead.attendance_status || 'Not Attended'} onChange={(e) => setLead({ ...lead, attendance_status: e.target.value })}>
-                    {ATTENDANCE_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <Label>Counselling Status</Label>
-                  <select className="mt-1 w-full rounded-md border border-input bg-background p-2 text-foreground" value={lead.counselling_status || 'Not Booked'} onChange={(e) => setLead({ ...lead, counselling_status: e.target.value })}>
-                    {COUNSELLING_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <Label>Contact Status</Label>
-                  <select className="mt-1 w-full rounded-md border border-input bg-background p-2 text-foreground" value={lead.contact_status || 'Not Contacted'} onChange={(e) => setLead({ ...lead, contact_status: e.target.value })}>
-                    {CONTACT_STATUS_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-border bg-background/60 p-4">
-                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Registration</h3>
-                  <div className="space-y-3 text-sm">
-                    <div><Label>Source</Label><div className="mt-1 font-medium text-foreground">{lead.source || '—'}</div></div>
-                    <div><Label>Registration Date</Label><div className="mt-1 font-medium text-foreground">{formatDate(lead.registration_date)}</div></div>
-                    <div><Label>Webinar Date</Label><div className="mt-1 font-medium text-foreground">{lead.webinar_date || '—'}</div></div>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-border bg-background/60 p-4">
-                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Follow-up</h3>
-                  <div className="space-y-3 text-sm">
-                    <div>
-                      <Label>Next Follow-up Date</Label>
-                      <input type="date" className="mt-1 w-full rounded-md border border-input bg-background p-2 text-foreground" value={lead.follow_up_date ? String(lead.follow_up_date).slice(0, 10) : ''} onChange={(e) => setLead({ ...lead, follow_up_date: e.target.value || null })} />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-lg border border-gray-200 bg-white p-4">
+                    <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-emerald-900">Personal Information</h3>
+                    <div className="space-y-4 text-sm">
+                      <div><Label className="text-xs font-semibold text-emerald-700">Full Name</Label><div className="mt-1 font-medium text-gray-900">{lead.full_name || '—'}</div></div>
+                      <div><Label className="text-xs font-semibold text-emerald-700">WhatsApp</Label><div className="mt-1 font-medium text-gray-900">{lead.whatsapp_number || '—'}</div></div>
+                      <div><Label className="text-xs font-semibold text-emerald-700">Email</Label><div className="mt-1 font-medium text-gray-900">{lead.email || '—'}</div></div>
+                      <div><Label className="text-xs font-semibold text-emerald-700">City</Label><div className="mt-1 font-medium text-gray-900">{lead.city || '—'}</div></div>
+                      <div><Label className="text-xs font-semibold text-emerald-700">Qualification</Label><div className="mt-1 font-medium text-gray-900">{lead.qualification || '—'}</div></div>
+                      <div><Label className="text-xs font-semibold text-emerald-700">Current Status</Label><div className="mt-1 font-medium text-gray-900">{lead.current_status || '—'}</div></div>
                     </div>
-                    <div>
-                      <Label>Follow-up Notes</Label>
-                      <textarea className="mt-1 w-full rounded-md border border-input bg-background p-2 text-foreground" rows={4} value={lead.follow_up_notes || ''} onChange={(e) => setLead({ ...lead, follow_up_notes: e.target.value })} />
-                    </div>
-                    <div>
-                      <Label>Last Contacted At</Label>
-                      <div className="mt-1 font-medium text-foreground">{formatDate(lead.last_contacted_at)}</div>
+                  </div>
+
+                  <div className="rounded-lg border border-gray-200 bg-emerald-50 p-4">
+                    <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-emerald-900">Course Information</h3>
+                    <div className="space-y-4 text-sm">
+                      <div><Label className="text-xs font-semibold text-emerald-700">Course Interest</Label><div className="mt-1 font-medium text-gray-900">{lead.course_interest || '—'}</div></div>
+                      <div><Label className="text-xs font-semibold text-emerald-700">Main Goal</Label><div className="mt-1 font-medium text-gray-900">{lead.main_goal || '—'}</div></div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <Button type="button" variant="secondary" onClick={onClose}>Close</Button>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-gray-900">Status & Progress</h3>
+                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div>
+                      <Label className="text-xs font-semibold text-emerald-700">Lead Status</Label>
+                      <select className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-emerald-500 focus:ring-emerald-500" value={lead.lead_status || 'Registered'} onChange={(e) => setLead({ ...lead, lead_status: e.target.value })}>
+                        {LEAD_STATUS_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-emerald-700">Attendance Status</Label>
+                      <select className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-emerald-500 focus:ring-emerald-500" value={lead.attendance_status || 'Not Attended'} onChange={(e) => setLead({ ...lead, attendance_status: e.target.value })}>
+                        {ATTENDANCE_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-emerald-700">Counselling Status</Label>
+                      <select className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-emerald-500 focus:ring-emerald-500" value={lead.counselling_status || 'Not Booked'} onChange={(e) => setLead({ ...lead, counselling_status: e.target.value })}>
+                        {COUNSELLING_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-emerald-700">Contact Status</Label>
+                      <select className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-emerald-500 focus:ring-emerald-500" value={lead.contact_status || 'Not Contacted'} onChange={(e) => setLead({ ...lead, contact_status: e.target.value })}>
+                        {CONTACT_STATUS_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-lg border border-gray-200 bg-emerald-50 p-4">
+                    <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-emerald-900">Registration Info</h3>
+                    <div className="space-y-4 text-sm">
+                        <div><Label className="text-xs font-semibold text-emerald-700">Source</Label><div className="mt-1 font-medium text-gray-900">{lead.source || '—'}</div></div>
+                        <div><Label className="text-xs font-semibold text-emerald-700">Registration Date</Label><div className="mt-1 font-medium text-gray-900">{formatDate(lead.registration_date)}</div></div>
+                        <div><Label className="text-xs font-semibold text-emerald-700">Webinar Date</Label><div className="mt-1 font-medium text-gray-900">{lead.webinar_date || '—'}</div></div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-gray-200 bg-amber-50 p-4">
+                    <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-amber-900">Follow-up</h3>
+                    <div className="space-y-4 text-sm">
+                      <div>
+                        <Label className="text-xs font-semibold text-amber-700">Next Follow-up Date</Label>
+                        <input type="date" className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-amber-500 focus:ring-amber-500" value={lead.follow_up_date ? String(lead.follow_up_date).slice(0, 10) : ''} onChange={(e) => setLead({ ...lead, follow_up_date: e.target.value || null })} />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-semibold text-amber-700">Follow-up Notes</Label>
+                        <textarea className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-amber-500 focus:ring-amber-500" rows={3} value={lead.follow_up_notes || ''} onChange={(e) => setLead({ ...lead, follow_up_notes: e.target.value })} />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-semibold text-amber-700">Last Contacted At</Label>
+                        <div className="mt-1 font-medium text-gray-900">{formatDate(lead.last_contacted_at)}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-4">
+                  <Button type="button" variant="outline" className="border-gray-300" onClick={onClose}>Close</Button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
