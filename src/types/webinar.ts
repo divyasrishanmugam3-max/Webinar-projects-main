@@ -33,11 +33,11 @@ export const ACADEMY_PRESETS: AcademyInfo[] = [
 ];
 
 export const WEBINAR_DETAILS = {
-  title: 'Free Python Full Stack + AI Career Webinar',
-  subtitle: 'Master Full Stack Development, Harness AI Coding Tools, and Navigate Your Pathway to High-Growth Tech Careers in 2026',
-  dateTimeStr: 'Saturday, August , 2026 • 7:00 PM IST',
+  title: 'How to Start Your Career in 2026',
+  subtitle: '',
+  dateTimeStr: 'Saturday, August 22, 2026 • 4:00 PM IST',
   targetTimestamp: new Date('2026-08-16T19:00:00+05:30').getTime(),
-  duration: '90 Minutes',
-  mode: 'Live Interactive Session (Zoom / Google Meet)',
+  duration: '40 Minutes',
+  mode: 'Live Interactive Session (Zoom)',
   whatsAppGroupLink: 'https://chat.whatsapp.com/demo-python-ai-webinar',
 };

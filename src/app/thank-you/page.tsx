@@ -41,12 +41,12 @@ export default function ThankYouPage({ searchParams }: { searchParams?: { [key: 
         </div>
 
         <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-          <a href={waLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-[#25D366] text-white font-semibold">
+          {/* <a href={waLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-[#25D366] text-white font-semibold">
             Join WhatsApp Community
-          </a>
-          <a href={calUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-border">
+          </a> */}
+          {/* <a href={calUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-border">
             Add to Google Calendar
-          </a>
+          </a> */}
         </div>
 
         <p className="text-xs text-muted-foreground mt-4">Join our WhatsApp community to receive webinar reminders and the webinar joining link.</p>
