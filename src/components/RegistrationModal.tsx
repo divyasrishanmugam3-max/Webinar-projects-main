@@ -32,10 +32,10 @@ export function RegistrationModal({ isOpen, onClose, academyName }: Registration
     phone: '',
     city: '',
     qualification: '',
-    currentStatus: 'College Student',
-    courseInterest: 'Full Stack Development + AI',
-    mainGoal: 'Get a Job',
-    role: 'student',
+    currentStatus: '',
+    courseInterest: '',
+    mainGoal: '',
+    role: '',
     source: 'Direct',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,49 +85,66 @@ export function RegistrationModal({ isOpen, onClose, academyName }: Registration
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        full_name: fullName,
-        whatsapp_number: phone,
-        email: email,
-        city: String((formData as any)?.city || '').trim(),
-        qualification: String((formData as any)?.qualification || '').trim(),
-        current_status: (formData as any)?.currentStatus || '',
-        course_interest: (formData as any)?.courseInterest || '',
-        main_goal: (formData as any)?.mainGoal || '',
-        source: (formData as any)?.source || 'Direct',
-        webinar_date: WEBINAR_DETAILS.dateTimeStr,
-      };
+  const payload = {
+    full_name: fullName,
+    whatsapp_number: phone,
+    email: email,
+    city: String((formData as any)?.city || '').trim(),
+    qualification: String((formData as any)?.qualification || '').trim(),
+    current_status: (formData as any)?.currentStatus || '',
+    course_interest: (formData as any)?.courseInterest || '',
+    main_goal: (formData as any)?.mainGoal || '',
+    source: (formData as any)?.source || 'Direct',
+    webinar_date: WEBINAR_DETAILS.dateTimeStr,
+  };
 
-      const res = await fetch(`https://dutxrxgwslbqlywnhrzj.supabase.co/rest/v1/leads`, {
-        method: 'POST',
-         headers: {
+  const res = await fetch(`https://dutxrxgwslbqlywnhrzj.supabase.co/rest/v1/leads`, {
+    method: 'POST',
+    headers: {
       apikey: anonKey,
       Authorization: `Bearer ${anonKey}`,
       'Content-Type': 'application/json',
+      // FIX 1: Forces Supabase to return the row data so data.id exists
+      'Prefer': 'return=representation', 
     },
-        body: JSON.stringify(payload),
-      });
+    body: JSON.stringify(payload),
+  });
 
-      if (res.status === 201) {
-        const data = await res.json();
-        toast.success('Registration successful — redirecting...');
-        setIsSubmitting(false);
-        onClose();
-        router.push(`/thank-you?id=${data.id}&name=${encodeURIComponent(payload.full_name)}`);
-      } else if (res.status === 409) {
-        const err = await res.json();
-        toast.error(err?.message || 'You have already registered');
-        setIsSubmitting(false);
-      } else {
-        const err = await res.json().catch(() => ({}));
-        toast.error(err?.message || 'Registration failed — please try again');
-        setIsSubmitting(false);
+  // FIX 2: Safely parse JSON or fallback to an empty array/object
+  let data: any = null;
+  const responseText = await res.text();
+  if (responseText) {
+    try {
+      data = JSON.parse(responseText);
+      // Supabase returns an array of rows when using return=representation
+      if (Array.isArray(data)) {
+        data = data[0];
       }
-    } catch (error) {
-      console.error(error);
-      toast.error('Network error — please try again');
-      setIsSubmitting(false);
+    } catch (e) {
+      console.error("Failed to parse response JSON", e);
     }
+  }
+
+  if (res.status === 201) {
+    toast.success('Registration successful — redirecting...');
+    setIsSubmitting(false);
+    onClose();
+    // Using the safely extracted ID from the array or payload fallback
+    const insertedId = data?.id || '';
+    router.push(`/thank-you?id=${insertedId}&name=${encodeURIComponent(payload.full_name)}`);
+  } else if (res.status === 409) {
+    toast.error(data?.message || 'You have already registered');
+    setIsSubmitting(false);
+  } else {
+    toast.error(data?.message || 'Registration failed — please try again');
+    setIsSubmitting(false);
+  }
+} catch (error) {
+  // FIX 3: Check your browser console log to see if a real network block happened
+  console.error("Actual Request Error Details:", error);
+  toast.error('Network error — please try again');
+  setIsSubmitting(false);
+}
   };
 
   const handleDownloadICS = () => {
