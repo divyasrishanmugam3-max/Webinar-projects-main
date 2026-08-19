@@ -49,7 +49,7 @@ export default function ThankYouPage({ searchParams }: { searchParams?: { [key: 
           </a> */}
         </div>
 
-        <p className="text-xs text-muted-foreground mt-4">Join our WhatsApp community to receive webinar reminders and the webinar joining link.</p>
+        {/* <p className="text-xs text-muted-foreground mt-4">Join our WhatsApp community to receive webinar reminders and the webinar joining link.</p> */}
       </div>
     </div>
   );
