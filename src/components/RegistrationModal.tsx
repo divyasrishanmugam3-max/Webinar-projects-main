@@ -80,7 +80,8 @@ export function RegistrationModal({ isOpen, onClose, academyName }: Registration
       toast.error('Please provide a valid phone/WhatsApp number');
       return;
     }
-
+    
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
     setIsSubmitting(true);
 
     try {
@@ -97,9 +98,13 @@ export function RegistrationModal({ isOpen, onClose, academyName }: Registration
         webinar_date: WEBINAR_DETAILS.dateTimeStr,
       };
 
-      const res = await fetch('/api/leads', {
+      const res = await fetch(`https://dutxrxgwslbqlywnhrzj.supabase.co/rest/v1/leads`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+         headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`,
+      'Content-Type': 'application/json',
+    },
         body: JSON.stringify(payload),
       });
 

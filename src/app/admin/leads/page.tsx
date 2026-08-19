@@ -106,6 +106,7 @@ export default function AdminLeadsPage() {
     setError(null);
 
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+    
     console.log("anonKey===",anonKey)
 
     const params = new URLSearchParams();
