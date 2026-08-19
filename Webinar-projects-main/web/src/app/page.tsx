@@ -90,7 +90,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setIsRegisterOpen(true)}
-                className="inline-flex animate-[pulse_2.1s_ease-in-out_infinite] items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-7 py-3.5 text-base font-black tracking-wide text-[#071210] shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_20px_40px_rgba(16,185,129,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02]"
+                className="inline-flex animate-[pulse_5.1s_ease-in-out_infinite] items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-300 px-7 py-3.5 text-base font-black tracking-wide text-[#071210] shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_20px_40px_rgba(16,185,129,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400/40 focus:ring-offset-2 focus:ring-offset-[#071210] md:text-lg"
               >
                 Register Now
                 <ArrowRight className="h-4 w-4" />
