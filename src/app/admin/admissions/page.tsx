@@ -95,6 +95,7 @@ export default function AdminAdmissionsPage() {
             <Link href="/admin/leads" className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50">Leads</Link>
             <Link href="/admin/admissions" className="inline-flex items-center rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">Admissions</Link>
             <Link href="/admin/students" className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50">Students</Link>
+            <Link href="/admin/certificates" className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50">Certificates</Link>
           </div>
         </header>
 
