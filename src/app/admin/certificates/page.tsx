@@ -48,14 +48,82 @@ export default function AdminCertificatesPage() {
     setParticipants((current) => [...current, ...valid].slice(0, 500)); setMessage(`${valid.length} valid participants added from CSV.`); input.target.value = '';
   };
   const generate = async () => {
-    setMessage(''); if (!participants.length) { setMessage('Add at least one participant.'); return; }
-    setLoading(true); setProgress(`Generating 0/${participants.length}`);
-    const response = await fetch('/api/admin/certificates', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event, participants }) });
+  setMessage('');
+
+  if (!participants.length) {
+    setMessage('Add at least one participant.');
+    return;
+  }
+
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+    
+    console.log("anonKey===",anonKey)
+  setLoading(true);
+  setProgress(`Generating 0/${participants.length}`);
+
+  try {
+    // const response = await fetch('/api/admin/certificates', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     event,
+    //     participants,
+    //   }),
+    // });
+
+       const response = await fetch(
+  `https://dutxrxgwslbqlywnhrzj.supabase.co/rest/v1/certificates`,
+  {
+    method: 'POST',
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`,
+      'Content-Type': 'application/json',
+    },
+     body: JSON.stringify({
+        event_name: event.event_name,
+event_type: event.event_type,
+college_name: event.college_name,
+event_date: event.event_date,
+certificate_type: event.certificate_type,
+issuer_name: event.issuer_name,
+issuer_designation: event.issuer_designation,
+ "student_name":"Flower",
+    "student_email":"flower@gmail.com"
+
+      }),
+  }
+     );
+
     const data = await response.json();
-    if (!response.ok) { setMessage(data.message || 'Generation failed.'); setLoading(false); setProgress(null); return; }
-    for (let index = 1; index <= data.total; index += 1) { setProgress(`Generating ${index}/${data.total}`); await new Promise((resolve) => window.setTimeout(resolve, 8)); }
-    setMessage(`${data.total} Certificates Generated Successfully`); setParticipants([]); setLoading(false); setProgress(null); await loadCertificates();
-  };
+
+    if (!response.ok) {
+      setMessage(data.message || 'Generation failed.');
+      return;
+    }
+
+    for (let index = 1; index <= data.total; index += 1) {
+      setProgress(`Generating ${index}/${data.total}`);
+
+      await new Promise((resolve) =>
+        window.setTimeout(resolve, 8)
+      );
+    }
+
+    setMessage(`${data.total} Certificates Generated Successfully`);
+    setParticipants([]);
+
+    await loadCertificates();
+  } catch (error) {
+    console.error('Certificate generation error:', error);
+    setMessage('Something went wrong while generating certificates.');
+  } finally {
+    setLoading(false);
+    setProgress(null);
+  }
+};
   const download = (id: string) => { window.location.href = `/api/admin/certificates/${encodeURIComponent(id)}/pdf`; };
   const downloadZip = () => { if (certificates.length) window.location.href = `/api/admin/certificates/zip?ids=${certificates.map((item) => encodeURIComponent(item.certificate_id)).join(',')}`; };
   const revoke = async (id: string) => { const response = await fetch(`/api/admin/certificates/${encodeURIComponent(id)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ verification_status: 'revoked' }) }); if (response.ok) await loadCertificates(); };
